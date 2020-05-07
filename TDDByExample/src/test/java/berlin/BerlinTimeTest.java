@@ -1,6 +1,7 @@
 package berlin;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -48,11 +49,9 @@ public class BerlinTimeTest {
     @MethodSource("firstRowArguments")
     public void shouldReturnConsistentResultForFirstRow(int hours,boolean[] expected){
         berlinClock.setHours(hours);
-        boolean[] firstCall = berlinClock.getFirstRow();
-        boolean[] secondCall = berlinClock.getFirstRow();
 
-        assertRowHas(expected,firstCall);
-        assertRowHas(expected,secondCall);
+        assertRowHas(expected,berlinClock.getFirstRow());
+        assertRowHas(expected,berlinClock.getFirstRow());
     }
 
     /**
@@ -63,6 +62,14 @@ public class BerlinTimeTest {
     public void shouldReturnABooleanArrayThatIndicatesHowManyLampsInTheSecondsRowAreOn(int hours,boolean[] expected){
         berlinClock.setHours(hours);
         assertRowHas(expected, berlinClock.getSecondRow());
+    }
+
+    @ParameterizedTest
+    @MethodSource("secondRowArguments")
+    public void shouldReturnConsistentResultForSecondRow(int hours,boolean[] expected) {
+        berlinClock.setHours(hours);
+        assertRowHas(expected,berlinClock.getSecondRow());
+        assertRowHas(expected,berlinClock.getSecondRow());
     }
 
     private static Stream<Arguments> firstRowArguments(){

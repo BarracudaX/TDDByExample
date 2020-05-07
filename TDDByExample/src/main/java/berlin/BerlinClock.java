@@ -1,6 +1,6 @@
 package berlin;
 
-public class BerlinTime {
+public class BerlinClock {
 
     private int hours;
 
@@ -8,7 +8,7 @@ public class BerlinTime {
 
     private int seconds;
 
-    public BerlinTime(int hours, int minutes, int seconds) {
+    public BerlinClock(int hours, int minutes, int seconds) {
         this.hours = hours;
         this.minutes = minutes;
         this.seconds = seconds;
@@ -41,4 +41,20 @@ public class BerlinTime {
         return result;
     }
 
+    public boolean[] getSecondRow() {
+        boolean[] result = new boolean[4];
+
+        int hours = this.hours;
+
+        hours %= 5;
+
+        for (int i = 0; i < result.length; i++) {
+            if (hours > 0) {
+                hours -= 1;
+                result[i] = true;
+            }
+        }
+
+        return result;
+    }
 }
