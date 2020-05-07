@@ -1,12 +1,14 @@
 package berlin;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -79,6 +81,14 @@ public class BerlinTimeTest {
     public void shouldReturnArrayOfColorsThatIndicateHowManyLampsInTheThirdRowAreOn(int minutes,BarColor[] expected) {
         berlinClock.setMinutes(minutes);
         assertRowHas(expected, berlinClock.getThirdRow());
+    }
+
+    @ParameterizedTest
+    @MethodSource("sourceOfInvalidHours")
+    public void setterAndConstructorShouldThrowIAEWhenHoursAreInvalid(int invalidHours){
+        assertThrows(IllegalArgumentException.class,
+                () -> berlinClock = new BerlinClock(invalidHours, 30, 20));
+        assertThrows(IllegalArgumentException.class, () -> berlinClock.setHours(invalidHours));
     }
 
     private static Stream<Arguments> firstRowArguments() {
@@ -174,6 +184,10 @@ public class BerlinTimeTest {
         }
 
         return arguments.stream();
+    }
+
+    private static IntStream sourceOfInvalidHours(){
+        return IntStream.of(-1, -24, 24, 25, 10_000, -5_000);
     }
 
     private void assertRowHas(BarColor[] expected, BarColor[] actual) {

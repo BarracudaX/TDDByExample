@@ -9,7 +9,7 @@ public class BerlinClock {
     private int seconds;
 
     public BerlinClock(int hours, int minutes, int seconds) {
-        this.hours = hours;
+        setHours(hours);
         this.minutes = minutes;
         this.seconds = seconds;
     }
@@ -23,6 +23,9 @@ public class BerlinClock {
     }
 
     public void setHours(int hours) {
+        if (hours < 0 || hours > 23) {
+            throw new IllegalArgumentException("Hours are invalid.Correct values [0,23].");
+        }
         this.hours = hours;
     }
 
