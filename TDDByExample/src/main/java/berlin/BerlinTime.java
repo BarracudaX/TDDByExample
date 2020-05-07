@@ -1,6 +1,6 @@
 package berlin;
 
-public class BerlinConverter {
+public class BerlinTime {
 
     private int hours;
 
@@ -8,7 +8,7 @@ public class BerlinConverter {
 
     private int seconds;
 
-    public BerlinConverter(int hours, int minutes, int seconds) {
+    public BerlinTime(int hours, int minutes, int seconds) {
         this.hours = hours;
         this.minutes = minutes;
         this.seconds = seconds;
@@ -28,6 +28,8 @@ public class BerlinConverter {
 
     public boolean[] getFirstRow() {
         boolean[] result = new boolean[4];
+
+        int hours = this.hours;
 
         for (int i = 0; i < result.length; i++) {
             if (hours >= 5) {

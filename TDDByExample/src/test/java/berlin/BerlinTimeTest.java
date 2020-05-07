@@ -1,54 +1,86 @@
 package berlin;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class BerlinTimeTest {
 
-    BerlinConverter converter;
+    BerlinTime berlinTime;
 
     @BeforeEach
     public void setUp(){
-        converter = new BerlinConverter(19, 55, 1);
+        berlinTime = new BerlinTime(19, 55, 1);
     }
 
-    @Test
-    public void shouldReturnTheTopLightIsOffWhenSecondsAreOdd() {
-        converter.setSeconds(1);
-        assertFalse(converter.isLightOn());
+    @ParameterizedTest
+    @MethodSource("secondsArguments")
+    public void shouldReturnTrueIfSecondsAreEvenAndFalseOtherwise(int seconds,boolean expected) {
+        berlinTime.setSeconds(seconds);
+        assertEquals(expected, berlinTime.isLightOn());
     }
 
-    @Test
-    public void shouldReturnTheTopLightIsOnWhenSecondsAreEven() {
-        converter.setSeconds(2);
-        assertTrue(converter.isLightOn());
+    @ParameterizedTest
+    @MethodSource("firstRowArguments")
+    public void shouldReturnABooleanArrayThatIndicatesHowManyLampsInTheFirstRowAreOnDependingOnTheHours(int hours,boolean[] expectedResult){
+        berlinTime.setHours(hours);
+        boolean[] firstRow = berlinTime.getFirstRow();
+
+        assertRowHas(expectedResult, firstRow);
     }
 
-    @Test
-    public void for_10_hours_should_return_a_boolean_array_that_indicates_that_first_two_lamps_are_on(){
-        converter.setHours(10);
-        boolean[] firstRow = converter.getFirstRow();
+    @ParameterizedTest
+    @MethodSource("firstRowArguments")
+    public void shouldReturnConsistentResultForFirstRow(int hours,boolean[] expected){
+        berlinTime.setHours(hours);
+        boolean[] firstCall = berlinTime.getFirstRow();
+        boolean[] secondCall = berlinTime.getFirstRow();
 
-        assertEquals(4,firstRow.length);
-        assertRowHas(new boolean[]{true, true, false, false}, firstRow);
+        assertRowHas(expected,firstCall);
+        assertRowHas(expected,secondCall);
     }
 
-    @Test
-    public void for_5_hours_should_return_a_boolean_array_that_indicates_that_first_lamp_is_on(){
-        converter.setHours(5);
-        boolean[] firstRow = converter.getFirstRow();
+    private static Stream<Arguments> firstRowArguments(){
+        return Stream.of(
+                arguments(0,new boolean[]{false,false,false,false}),
+                arguments(4,new boolean[]{false,false,false,false}),
+                arguments(5,new boolean[]{true,false,false,false}),
+                arguments(9,new boolean[]{true,false,false,false}),
+                arguments(10,new boolean[]{true,true,false,false}),
+                arguments(14,new boolean[]{true,true,false,false}),
+                arguments(15,new boolean[]{true,true,true,false}),
+                arguments(19,new boolean[]{true,true,true,false}),
+                arguments(20,new boolean[]{true,true,true,true}),
+                arguments(23,new boolean[]{true,true,true,true})
+        );
+    }
 
-        assertRowHas(new boolean[]{true,false,false,false},firstRow);
+    private static Stream<Arguments> secondsArguments(){
+        Collection<Arguments> arguments = new ArrayList<>();
+
+        for (int i = 0; i < 59; i++) {
+            arguments.add(arguments(i, i % 2 == 0));
+        }
+
+        return arguments.stream();
     }
 
     private void assertRowHas(boolean[] expected, boolean[] actual) {
-        assertEquals(expected.length, actual.length);
+        assertEquals(4,expected.length);
+        assertEquals(4, actual.length);
 
-        for (int i = 0; i < expected.length; i++) {
-            assertEquals(expected[i], actual[i]);
-        }
+        assertEquals(expected[0],actual[0]);
+        assertEquals(expected[1],actual[1]);
+        assertEquals(expected[2],actual[2]);
+        assertEquals(expected[3],actual[3]);
     }
 
 }
