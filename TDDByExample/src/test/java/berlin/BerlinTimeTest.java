@@ -32,9 +32,23 @@ public class BerlinTimeTest {
         boolean[] firstRow = converter.getFirstRow();
 
         assertEquals(4,firstRow.length);
-        assertTrue(firstRow[0]);
-        assertTrue(firstRow[1]);
-        assertFalse(firstRow[2]);
-        assertFalse(firstRow[3]);
+        assertRowHas(new boolean[]{true, true, false, false}, firstRow);
     }
+
+    @Test
+    public void for_5_hours_should_return_a_boolean_array_that_indicates_that_first_lamp_is_on(){
+        converter.setHours(5);
+        boolean[] firstRow = converter.getFirstRow();
+
+        assertRowHas(new boolean[]{true,false,false,false},firstRow);
+    }
+
+    private void assertRowHas(boolean[] expected, boolean[] actual) {
+        assertEquals(expected.length, actual.length);
+
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals(expected[i], actual[i]);
+        }
+    }
+
 }

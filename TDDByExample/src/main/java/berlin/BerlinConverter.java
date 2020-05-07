@@ -23,11 +23,20 @@ public class BerlinConverter {
     }
 
     public void setHours(int hours) {
-
+        this.hours = hours;
     }
 
     public boolean[] getFirstRow() {
-        return new boolean[]{true,true,false,false};
+        boolean[] result = new boolean[4];
+
+        for (int i = 0; i < result.length; i++) {
+            if (hours >= 5) {
+                hours -= 5;
+                result[i]=true;
+            }
+        }
+
+        return result;
     }
 
 }
