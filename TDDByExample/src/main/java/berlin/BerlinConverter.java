@@ -2,11 +2,23 @@ package berlin;
 
 public class BerlinConverter {
 
-    public BerlinConverter(int hours, int minutes, int seconds) {
+    private int hours;
 
+    private int minutes;
+
+    private int seconds;
+
+    public BerlinConverter(int hours, int minutes, int seconds) {
+        this.hours = hours;
+        this.minutes = minutes;
+        this.seconds = seconds;
     }
 
     public boolean isLightOn() {
-        return false;
+        return seconds % 2 == 0;
+    }
+
+    public void setSeconds(int seconds) {
+        this.seconds = seconds;
     }
 }
