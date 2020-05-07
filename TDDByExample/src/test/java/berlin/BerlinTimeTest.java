@@ -1,7 +1,6 @@
 package berlin;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -18,13 +17,13 @@ public class BerlinTimeTest {
     BerlinClock berlinClock;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         berlinClock = new BerlinClock(19, 55, 1);
     }
 
     @ParameterizedTest
     @MethodSource("secondsArguments")
-    public void shouldReturnTrueIfSecondsAreEvenAndFalseOtherwise(int seconds,boolean expected) {
+    public void shouldReturnYellowLightIfTheSecondsAreEvenAndNoneIfOdd(int seconds, BarColor expected) {
         berlinClock.setSeconds(seconds);
         assertEquals(expected, berlinClock.isLightOn());
     }
@@ -38,20 +37,20 @@ public class BerlinTimeTest {
      */
     @ParameterizedTest
     @MethodSource("firstRowArguments")
-    public void shouldReturnBooleanArrayThatIndicatesHowManyLampsInFirstRowAreOn(int hours, boolean[] expectedResult){
+    public void shouldReturnColorsArrayThatIndicatesHowManyLampsInFirstRowAreOn(int hours, BarColor[] expectedResult) {
         berlinClock.setHours(hours);
-        boolean[] firstRow = berlinClock.getFirstRow();
+        BarColor[] firstRow = berlinClock.getFirstRow();
 
         assertRowHas(expectedResult, firstRow);
     }
 
     @ParameterizedTest
     @MethodSource("firstRowArguments")
-    public void shouldReturnConsistentResultForFirstRow(int hours,boolean[] expected){
+    public void shouldReturnConsistentResultForFirstRow(int hours, BarColor[] expected) {
         berlinClock.setHours(hours);
 
-        assertRowHas(expected,berlinClock.getFirstRow());
-        assertRowHas(expected,berlinClock.getFirstRow());
+        assertRowHas(expected, berlinClock.getFirstRow());
+        assertRowHas(expected, berlinClock.getFirstRow());
     }
 
     /**
@@ -59,79 +58,131 @@ public class BerlinTimeTest {
      */
     @ParameterizedTest
     @MethodSource("secondRowArguments")
-    public void shouldReturnABooleanArrayThatIndicatesHowManyLampsInTheSecondsRowAreOn(int hours,boolean[] expected){
+    public void shouldReturnColorsArrayThatIndicatesHowManyLampsInTheSecondsRowAreOn(int hours, BarColor[] expected) {
         berlinClock.setHours(hours);
         assertRowHas(expected, berlinClock.getSecondRow());
     }
 
     @ParameterizedTest
     @MethodSource("secondRowArguments")
-    public void shouldReturnConsistentResultForSecondRow(int hours,boolean[] expected) {
+    public void shouldReturnConsistentResultForSecondRow(int hours, BarColor[] expected) {
         berlinClock.setHours(hours);
-        assertRowHas(expected,berlinClock.getSecondRow());
-        assertRowHas(expected,berlinClock.getSecondRow());
+        assertRowHas(expected, berlinClock.getSecondRow());
+        assertRowHas(expected, berlinClock.getSecondRow());
     }
 
-    private static Stream<Arguments> firstRowArguments(){
+    /**
+     * Every lamp that is on in the third row is equal to 5 minutes.Every third lamp denotes 15,30,45min.
+     */
+    @ParameterizedTest
+    @MethodSource("thirdRowArguments")
+    public void shouldReturnArrayOfColorsThatIndicateHowManyLampsInTheThirdRowAreOn(int minutes,BarColor[] expected) {
+        berlinClock.setMinutes(minutes);
+        assertRowHas(expected, berlinClock.getThirdRow());
+    }
+
+    private static Stream<Arguments> firstRowArguments() {
         return Stream.of(
-                arguments(0,new boolean[]{false,false,false,false}),
-                arguments(4,new boolean[]{false,false,false,false}),
-                arguments(5,new boolean[]{true,false,false,false}),
-                arguments(9,new boolean[]{true,false,false,false}),
-                arguments(10,new boolean[]{true,true,false,false}),
-                arguments(14,new boolean[]{true,true,false,false}),
-                arguments(15,new boolean[]{true,true,true,false}),
-                arguments(19,new boolean[]{true,true,true,false}),
-                arguments(20,new boolean[]{true,true,true,true}),
-                arguments(23,new boolean[]{true,true,true,true})
+                arguments(0, expectedRow(0,4)),
+                arguments(4, expectedRow(0,4)),
+                arguments(5, expectedRow(1,3)),
+                arguments(9, expectedRow(1,3)),
+                arguments(10, expectedRow(2,2)),
+                arguments(14, expectedRow(2,2)),
+                arguments(15, expectedRow(3,1)),
+                arguments(19, expectedRow(3,1)),
+                arguments(20, expectedRow(4,0)),
+                arguments(23, expectedRow(4,0))
         );
     }
 
-    private static Stream<Arguments> secondsArguments(){
+    private static Stream<Arguments> secondRowArguments() {
+        return Stream.of(
+                arguments(5,expectedRow(0,4)),
+                arguments(10, expectedRow(0,4)),
+                arguments(15, expectedRow(0,4)),
+                arguments(20, expectedRow(0,4)),
+                arguments(6, expectedRow(1,3)),
+                arguments(11, expectedRow(1,3)),
+                arguments(16, expectedRow(1,3)),
+                arguments(21, expectedRow(1,3)),
+                arguments(2, expectedRow(2,2)),
+                arguments(7, expectedRow(2,2)),
+                arguments(12, expectedRow(2,2)),
+                arguments(17, expectedRow(2,2)),
+                arguments(22, expectedRow(2,2)),
+                arguments(3, expectedRow(3,1)),
+                arguments(8, expectedRow(3,1)),
+                arguments(13, expectedRow(3,1)),
+                arguments(23, expectedRow(3,1)),
+                arguments(4, expectedRow(4,0)),
+                arguments(9, expectedRow(4,0)),
+                arguments(14, expectedRow(4,0)),
+                arguments(19, expectedRow(4,0)),
+                arguments(24, expectedRow(4,0))
+        );
+    }
+
+    private static Stream<Arguments> thirdRowArguments() {
+        return Stream.of(
+                arguments(
+                        35,
+                        new BarColor[]{
+                        BarColor.YELLOW,BarColor.YELLOW,BarColor.RED,BarColor.YELLOW,BarColor.YELLOW,
+                        BarColor.RED,BarColor.YELLOW,BarColor.NONE,BarColor.NONE,BarColor.NONE,BarColor.NONE}
+                        ),
+                arguments(
+                        53,
+                        new BarColor[]{
+                        BarColor.YELLOW,BarColor.YELLOW,BarColor.RED,BarColor.YELLOW,BarColor.YELLOW,
+                        BarColor.RED,BarColor.YELLOW,BarColor.YELLOW,BarColor.RED,BarColor.YELLOW,BarColor.NONE}
+                        ),
+                arguments(
+                        22,
+                        new BarColor[]{
+                        BarColor.YELLOW,BarColor.YELLOW,BarColor.RED,BarColor.YELLOW,BarColor.NONE,
+                        BarColor.NONE,BarColor.NONE,BarColor.NONE,BarColor.NONE,BarColor.NONE,BarColor.NONE}
+                        ),
+                arguments(
+                        14,
+                        new BarColor[]{
+                        BarColor.YELLOW,BarColor.YELLOW,BarColor.NONE,BarColor.NONE,BarColor.NONE,
+                        BarColor.NONE,BarColor.NONE,BarColor.NONE,BarColor.NONE,BarColor.NONE,BarColor.NONE}
+                        )
+        );
+    }
+
+    private static BarColor[] expectedRow(int red, int none) {
+        BarColor[] colors = new BarColor[red + none];
+
+        for (int i = 0; i < red; i++) {
+            colors[i] = BarColor.RED;
+        }
+
+        for (int j = red; j < red + none; j++) {
+            colors[j] = BarColor.NONE;
+        }
+
+        return colors;
+    }
+
+    private static Stream<Arguments> secondsArguments() {
         Collection<Arguments> arguments = new ArrayList<>();
 
         for (int i = 0; i < 59; i++) {
-            arguments.add(arguments(i, i % 2 == 0));
+            arguments.add(arguments(i, i % 2 == 0 ? BarColor.YELLOW : BarColor.NONE));
         }
 
         return arguments.stream();
     }
 
-    private static Stream<Arguments> secondRowArguments(){
-        return Stream.of(
-                arguments(5,new boolean[]{false,false,false,false}),
-                arguments(10,new boolean[]{false,false,false,false}),
-                arguments(15,new boolean[]{false,false,false,false}),
-                arguments(20,new boolean[]{false,false,false,false}),
-                arguments(6,new boolean[]{true,false,false,false}),
-                arguments(11,new boolean[]{true,false,false,false}),
-                arguments(16,new boolean[]{true,false,false,false}),
-                arguments(21,new boolean[]{true,false,false,false}),
-                arguments(2,new boolean[]{true,true,false,false}),
-                arguments(7,new boolean[]{true,true,false,false}),
-                arguments(12,new boolean[]{true,true,false,false}),
-                arguments(17,new boolean[]{true,true,false,false}),
-                arguments(22,new boolean[]{true,true,false,false}),
-                arguments(3,new boolean[]{true,true,true,false}),
-                arguments(8,new boolean[]{true,true,true,false}),
-                arguments(13,new boolean[]{true,true,true,false}),
-                arguments(23,new boolean[]{true,true,true,false}),
-                arguments(4,new boolean[]{true,true,true,true}),
-                arguments(9,new boolean[]{true,true,true,true}),
-                arguments(14,new boolean[]{true,true,true,true}),
-                arguments(19,new boolean[]{true,true,true,true}),
-                arguments(24,new boolean[]{true,true,true,true})
-        );
-    }
+    private void assertRowHas(BarColor[] expected, BarColor[] actual) {
+        assertEquals(expected.length,actual.length);
 
-    private void assertRowHas(boolean[] expected, boolean[] actual) {
-        assertEquals(4,expected.length);
-        assertEquals(4, actual.length);
-
-        assertEquals(expected[0],actual[0]);
-        assertEquals(expected[1],actual[1]);
-        assertEquals(expected[2],actual[2]);
-        assertEquals(expected[3],actual[3]);
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals(expected[i],actual[i],
+                    "Expected : "+expected[i]+",but actual value was : "+actual[i]+".Index = "+i);
+        }
     }
 
 }

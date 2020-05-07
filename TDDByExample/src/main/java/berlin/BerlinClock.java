@@ -14,8 +14,8 @@ public class BerlinClock {
         this.seconds = seconds;
     }
 
-    public boolean isLightOn() {
-        return seconds % 2 == 0;
+    public BarColor isLightOn() {
+        return seconds % 2 == 0 ? BarColor.YELLOW : BarColor.NONE;
     }
 
     public void setSeconds(int seconds) {
@@ -26,23 +26,25 @@ public class BerlinClock {
         this.hours = hours;
     }
 
-    public boolean[] getFirstRow() {
-        boolean[] result = new boolean[4];
+    public BarColor[] getFirstRow() {
+        BarColor[] result = new BarColor[4];
 
         int hours = this.hours;
 
         for (int i = 0; i < result.length; i++) {
             if (hours >= 5) {
                 hours -= 5;
-                result[i]=true;
+                result[i] = BarColor.RED;
+            }else{
+                result[i] = BarColor.NONE;
             }
         }
 
         return result;
     }
 
-    public boolean[] getSecondRow() {
-        boolean[] result = new boolean[4];
+    public BarColor[] getSecondRow() {
+        BarColor[] result = new BarColor[4];
 
         int hours = this.hours;
 
@@ -51,10 +53,35 @@ public class BerlinClock {
         for (int i = 0; i < result.length; i++) {
             if (hours > 0) {
                 hours -= 1;
-                result[i] = true;
+                result[i] = BarColor.RED;
+            }else{
+                result[i] = BarColor.NONE;
             }
         }
 
         return result;
+    }
+
+    public void setMinutes(int minutes) {
+        this.minutes = minutes;
+    }
+
+    public BarColor[] getThirdRow() {
+        BarColor[] colors = new BarColor[11];
+        int counter = 0;
+        for (int i = 0; i < colors.length; i++) {
+            counter++;
+            if (minutes < 5) {
+                colors[i] = BarColor.NONE;
+            } else if (counter == 3) {
+                counter = 0;
+                colors[i] = BarColor.RED;
+            } else {
+                colors[i] = BarColor.YELLOW;
+            }
+            minutes -= 5;
+        }
+
+        return colors;
     }
 }
