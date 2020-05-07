@@ -14,25 +14,32 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class BerlinTimeTest {
 
-    BerlinTime berlinTime;
+    BerlinClock berlinClock;
 
     @BeforeEach
     public void setUp(){
-        berlinTime = new BerlinTime(19, 55, 1);
+        berlinClock = new BerlinClock(19, 55, 1);
     }
 
     @ParameterizedTest
     @MethodSource("secondsArguments")
     public void shouldReturnTrueIfSecondsAreEvenAndFalseOtherwise(int seconds,boolean expected) {
-        berlinTime.setSeconds(seconds);
-        assertEquals(expected, berlinTime.isLightOn());
+        berlinClock.setSeconds(seconds);
+        assertEquals(expected, berlinClock.isLightOn());
     }
 
+    /**
+     * Each lamp that is on in first row of Berlin Clock indicates a +5 hours in the time.
+     * 0 lamps on : hours < 5,
+     * first lamp on: hours < 10,
+     * first and second lamps on : hours < 15,
+     * and so on...
+     */
     @ParameterizedTest
     @MethodSource("firstRowArguments")
-    public void shouldReturnABooleanArrayThatIndicatesHowManyLampsInTheFirstRowAreOnDependingOnTheHours(int hours,boolean[] expectedResult){
-        berlinTime.setHours(hours);
-        boolean[] firstRow = berlinTime.getFirstRow();
+    public void shouldReturnBooleanArrayThatIndicatesHowManyLampsInFirstRowAreOn(int hours, boolean[] expectedResult){
+        berlinClock.setHours(hours);
+        boolean[] firstRow = berlinClock.getFirstRow();
 
         assertRowHas(expectedResult, firstRow);
     }
@@ -40,12 +47,22 @@ public class BerlinTimeTest {
     @ParameterizedTest
     @MethodSource("firstRowArguments")
     public void shouldReturnConsistentResultForFirstRow(int hours,boolean[] expected){
-        berlinTime.setHours(hours);
-        boolean[] firstCall = berlinTime.getFirstRow();
-        boolean[] secondCall = berlinTime.getFirstRow();
+        berlinClock.setHours(hours);
+        boolean[] firstCall = berlinClock.getFirstRow();
+        boolean[] secondCall = berlinClock.getFirstRow();
 
         assertRowHas(expected,firstCall);
         assertRowHas(expected,secondCall);
+    }
+
+    /**
+     * Each lamp that is on in the seconds row indicates +1hour.
+     */
+    @ParameterizedTest
+    @MethodSource("secondRowArguments")
+    public void shouldReturnABooleanArrayThatIndicatesHowManyLampsInTheSecondsRowAreOn(int hours,boolean[] expected){
+        berlinClock.setHours(hours);
+        assertRowHas(expected, berlinClock.getSecondRow());
     }
 
     private static Stream<Arguments> firstRowArguments(){
@@ -71,6 +88,33 @@ public class BerlinTimeTest {
         }
 
         return arguments.stream();
+    }
+
+    private static Stream<Arguments> secondRowArguments(){
+        return Stream.of(
+                arguments(5,new boolean[]{false,false,false,false}),
+                arguments(10,new boolean[]{false,false,false,false}),
+                arguments(15,new boolean[]{false,false,false,false}),
+                arguments(20,new boolean[]{false,false,false,false}),
+                arguments(6,new boolean[]{true,false,false,false}),
+                arguments(11,new boolean[]{true,false,false,false}),
+                arguments(16,new boolean[]{true,false,false,false}),
+                arguments(21,new boolean[]{true,false,false,false}),
+                arguments(2,new boolean[]{true,true,false,false}),
+                arguments(7,new boolean[]{true,true,false,false}),
+                arguments(12,new boolean[]{true,true,false,false}),
+                arguments(17,new boolean[]{true,true,false,false}),
+                arguments(22,new boolean[]{true,true,false,false}),
+                arguments(3,new boolean[]{true,true,true,false}),
+                arguments(8,new boolean[]{true,true,true,false}),
+                arguments(13,new boolean[]{true,true,true,false}),
+                arguments(23,new boolean[]{true,true,true,false}),
+                arguments(4,new boolean[]{true,true,true,true}),
+                arguments(9,new boolean[]{true,true,true,true}),
+                arguments(14,new boolean[]{true,true,true,true}),
+                arguments(19,new boolean[]{true,true,true,true}),
+                arguments(24,new boolean[]{true,true,true,true})
+        );
     }
 
     private void assertRowHas(boolean[] expected, boolean[] actual) {
