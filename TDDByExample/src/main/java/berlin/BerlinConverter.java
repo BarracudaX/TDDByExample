@@ -21,4 +21,13 @@ public class BerlinConverter {
     public void setSeconds(int seconds) {
         this.seconds = seconds;
     }
+
+    public void setHours(int hours) {
+
+    }
+
+    public boolean[] getFirstRow() {
+        return new boolean[]{true,true,false,false};
+    }
+
 }

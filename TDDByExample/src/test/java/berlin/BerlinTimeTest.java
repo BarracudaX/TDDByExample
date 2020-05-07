@@ -26,4 +26,15 @@ public class BerlinTimeTest {
         assertTrue(converter.isLightOn());
     }
 
+    @Test
+    public void for_10_hours_should_return_a_boolean_array_that_indicates_that_first_two_lamps_are_on(){
+        converter.setHours(10);
+        boolean[] firstRow = converter.getFirstRow();
+
+        assertEquals(4,firstRow.length);
+        assertTrue(firstRow[0]);
+        assertTrue(firstRow[1]);
+        assertFalse(firstRow[2]);
+        assertFalse(firstRow[3]);
+    }
 }
