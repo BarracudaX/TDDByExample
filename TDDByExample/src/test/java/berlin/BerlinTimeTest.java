@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-//11
+//12
 public class BerlinTimeTest {
 
     BerlinClock berlinClock;
@@ -96,15 +96,10 @@ public class BerlinTimeTest {
      */
     @ParameterizedTest
     @MethodSource("berlin.TestValues#fourthRowArguments")
-    public void shouldReturnArrayOfColorsThatIndicateWhichLampsInTheFourthRowAreOn(){
-        berlinClock.setMinutes(30);
+    public void shouldReturnArrayOfColorsThatIndicateWhichLampsInTheFourthRowAreOn(int minutes,BarColor[] expected){
+        berlinClock.setMinutes(minutes);
         BarColor[] colors = berlinClock.getFourthRow();
-        assertRowHas(new BarColor[]{BarColor.NONE, BarColor.NONE, BarColor.NONE, BarColor.NONE}, colors);
-
-        berlinClock.setMinutes(31);
-        colors = berlinClock.getFourthRow();
-        assertRowHas(new BarColor[]{BarColor.YELLOW, BarColor.NONE, BarColor.NONE, BarColor.NONE}, colors);
-
+        assertRowHas(expected, colors);
     }
 
     @ParameterizedTest
