@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+//8
 public class BerlinTimeTest {
 
     BerlinClock berlinClock;
@@ -84,6 +85,14 @@ public class BerlinTimeTest {
     }
 
     @ParameterizedTest
+    @MethodSource("thirdRowArguments")
+    public void shouldReturnConsistentColorsForTheThirdRow(int minutes,BarColor[] expected){
+        berlinClock.setMinutes(minutes);
+        assertRowHas(expected,berlinClock.getThirdRow());
+        assertRowHas(expected,berlinClock.getThirdRow());
+    }
+
+    @ParameterizedTest
     @MethodSource("sourceOfInvalidHours")
     public void setterAndConstructorShouldThrowIAEWhenHoursAreInvalid(int invalidHours){
         assertThrows(IllegalArgumentException.class,
@@ -93,7 +102,7 @@ public class BerlinTimeTest {
 
     private static Stream<Arguments> firstRowArguments() {
         return Stream.of(
-                arguments(0, expectedRow(0,4)),
+                arguments(1, expectedRow(0,4)),
                 arguments(4, expectedRow(0,4)),
                 arguments(5, expectedRow(1,3)),
                 arguments(9, expectedRow(1,3)),
@@ -102,7 +111,8 @@ public class BerlinTimeTest {
                 arguments(15, expectedRow(3,1)),
                 arguments(19, expectedRow(3,1)),
                 arguments(20, expectedRow(4,0)),
-                arguments(23, expectedRow(4,0))
+                arguments(23, expectedRow(4,0)),
+                arguments(24, expectedRow(4,0))
         );
     }
 
@@ -187,7 +197,7 @@ public class BerlinTimeTest {
     }
 
     private static IntStream sourceOfInvalidHours(){
-        return IntStream.of(-1, -24, 24, 25, 10_000, -5_000);
+        return IntStream.of(-1, -24, 0,25, 10_000, -5_000);
     }
 
     private void assertRowHas(BarColor[] expected, BarColor[] actual) {

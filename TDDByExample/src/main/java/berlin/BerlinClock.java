@@ -1,5 +1,7 @@
 package berlin;
 
+import java.util.function.Predicate;
+
 public class BerlinClock {
 
     private int hours;
@@ -18,30 +20,12 @@ public class BerlinClock {
         return seconds % 2 == 0 ? BarColor.YELLOW : BarColor.NONE;
     }
 
-    public void setSeconds(int seconds) {
-        this.seconds = seconds;
-    }
-
-    public void setHours(int hours) {
-        if (hours < 0 || hours > 23) {
-            throw new IllegalArgumentException("Hours are invalid.Correct values [0,23].");
-        }
-        this.hours = hours;
-    }
-
     public BarColor[] getFirstRow() {
         BarColor[] result = new BarColor[4];
 
         int hours = this.hours;
 
-        for (int i = 0; i < result.length; i++) {
-            if (hours >= 5) {
-                hours -= 5;
-                result[i] = BarColor.RED;
-            }else{
-                result[i] = BarColor.NONE;
-            }
-        }
+        fillRow(result, hours, value -> value >= 5, value -> value - 5);
 
         return result;
     }
@@ -53,25 +37,30 @@ public class BerlinClock {
 
         hours %= 5;
 
-        for (int i = 0; i < result.length; i++) {
-            if (hours > 0) {
-                hours -= 1;
-                result[i] = BarColor.RED;
-            }else{
-                result[i] = BarColor.NONE;
-            }
-        }
+        fillRow(result, hours, value -> value > 0, (value) -> value - 1);
 
         return result;
     }
 
-    public void setMinutes(int minutes) {
-        this.minutes = minutes;
+    private <T> void fillRow(BarColor[] colors, T initValue, Predicate<T> tester, Transformer<T> transformer) {
+        for (int i = 0; i < colors.length; i++) {
+
+            if (tester.test(initValue)) {
+                colors[i] = BarColor.RED;
+            } else {
+                colors[i] = BarColor.NONE;
+            }
+            initValue = transformer.transform(initValue);
+        }
     }
 
     public BarColor[] getThirdRow() {
         BarColor[] colors = new BarColor[11];
+
         int counter = 0;
+
+        int minutes = this.minutes;
+
         for (int i = 0; i < colors.length; i++) {
             counter++;
             if (minutes < 5) {
@@ -86,5 +75,25 @@ public class BerlinClock {
         }
 
         return colors;
+    }
+
+    public void setSeconds(int seconds) {
+        this.seconds = seconds;
+    }
+
+    public void setHours(int hours) {
+        if (hours < 1 || hours > 24) {
+            throw new IllegalArgumentException("Hours are invalid.Correct values [1,24].");
+        }
+        this.hours = hours;
+    }
+
+    public void setMinutes(int minutes) {
+        this.minutes = minutes;
+    }
+
+    private interface Transformer<T> {
+
+        T transform(T t);
     }
 }
