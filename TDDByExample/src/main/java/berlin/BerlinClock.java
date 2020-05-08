@@ -23,9 +23,7 @@ public class BerlinClock {
     public BarColor[] getFirstRow() {
         BarColor[] result = new BarColor[4];
 
-        int hours = this.hours;
-
-        fillRow(result, hours, value -> value >= 5, value -> value - 5);
+        fillRow(result, hours, value -> value >= 5, value -> value - 5,BarColor.RED);
 
         return result;
     }
@@ -33,25 +31,9 @@ public class BerlinClock {
     public BarColor[] getSecondRow() {
         BarColor[] result = new BarColor[4];
 
-        int hours = this.hours;
-
-        hours %= 5;
-
-        fillRow(result, hours, value -> value > 0, (value) -> value - 1);
+        fillRow(result, hours % 5, value -> value > 0, (value) -> value - 1,BarColor.RED);
 
         return result;
-    }
-
-    private <T> void fillRow(BarColor[] colors, T initValue, Predicate<T> tester, Transformer<T> transformer) {
-        for (int i = 0; i < colors.length; i++) {
-
-            if (tester.test(initValue)) {
-                colors[i] = BarColor.RED;
-            } else {
-                colors[i] = BarColor.NONE;
-            }
-            initValue = transformer.transform(initValue);
-        }
     }
 
     public BarColor[] getThirdRow() {
@@ -77,6 +59,29 @@ public class BerlinClock {
         return colors;
     }
 
+    public BarColor[] getFourthRow() {
+        minutes %= 5;
+
+        BarColor[] colors = new BarColor[4];
+
+        fillRow(colors,minutes,value -> value > 0,value -> value - 1,BarColor.YELLOW);
+
+        return colors;
+    }
+
+    private <T> void fillRow(BarColor[] colors, T initValue, Predicate<T> tester,
+                             Transformer<T> transformer,BarColor successColor) {
+        for (int i = 0; i < colors.length; i++) {
+
+            if (tester.test(initValue)) {
+                colors[i] = successColor;
+            } else {
+                colors[i] = BarColor.NONE;
+            }
+            initValue = transformer.transform(initValue);
+        }
+    }
+
     public void setSeconds(int seconds) {
         this.seconds = seconds;
     }
@@ -95,8 +100,4 @@ public class BerlinClock {
         this.minutes = minutes;
     }
 
-    private interface Transformer<T> {
-
-        T transform(T t);
-    }
 }

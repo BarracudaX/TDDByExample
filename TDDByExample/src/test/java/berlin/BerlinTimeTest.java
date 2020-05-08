@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-//10
+//11
 public class BerlinTimeTest {
 
     BerlinClock berlinClock;
@@ -25,7 +25,7 @@ public class BerlinTimeTest {
     }
 
     @ParameterizedTest
-    @MethodSource("secondsArguments")
+    @MethodSource("berlin.TestValues#secondsArguments")
     public void shouldReturnYellowLightIfTheSecondsAreEvenAndNoneIfOdd(int seconds, BarColor expected) {
         berlinClock.setSeconds(seconds);
         assertEquals(expected, berlinClock.isLightOn());
@@ -39,16 +39,15 @@ public class BerlinTimeTest {
      * and so on...
      */
     @ParameterizedTest
-    @MethodSource("firstRowArguments")
+    @MethodSource("berlin.TestValues#firstRowArguments")
     public void shouldReturnColorsArrayThatIndicatesHowManyLampsInFirstRowAreOn(int hours, BarColor[] expectedResult) {
         berlinClock.setHours(hours);
         BarColor[] firstRow = berlinClock.getFirstRow();
-
         assertRowHas(expectedResult, firstRow);
     }
 
     @ParameterizedTest
-    @MethodSource("firstRowArguments")
+    @MethodSource("berlin.TestValues#firstRowArguments")
     public void shouldReturnConsistentResultForFirstRow(int hours, BarColor[] expected) {
         berlinClock.setHours(hours);
 
@@ -60,14 +59,14 @@ public class BerlinTimeTest {
      * Each lamp that is on in the seconds row indicates +1hour.
      */
     @ParameterizedTest
-    @MethodSource("secondRowArguments")
+    @MethodSource("berlin.TestValues#secondRowArguments")
     public void shouldReturnColorsArrayThatIndicatesHowManyLampsInTheSecondsRowAreOn(int hours, BarColor[] expected) {
         berlinClock.setHours(hours);
         assertRowHas(expected, berlinClock.getSecondRow());
     }
 
     @ParameterizedTest
-    @MethodSource("secondRowArguments")
+    @MethodSource("berlin.TestValues#secondRowArguments")
     public void shouldReturnConsistentResultForSecondRow(int hours, BarColor[] expected) {
         berlinClock.setHours(hours);
         assertRowHas(expected, berlinClock.getSecondRow());
@@ -78,22 +77,38 @@ public class BerlinTimeTest {
      * Every lamp that is on in the third row is equal to 5 minutes.Every third lamp denotes 15,30,45min.
      */
     @ParameterizedTest
-    @MethodSource("thirdRowArguments")
+    @MethodSource("berlin.TestValues#thirdRowArguments")
     public void shouldReturnArrayOfColorsThatIndicateHowManyLampsInTheThirdRowAreOn(int minutes,BarColor[] expected) {
         berlinClock.setMinutes(minutes);
         assertRowHas(expected, berlinClock.getThirdRow());
     }
 
     @ParameterizedTest
-    @MethodSource("thirdRowArguments")
+    @MethodSource("berlin.TestValues#thirdRowArguments")
     public void shouldReturnConsistentColorsForTheThirdRow(int minutes,BarColor[] expected){
         berlinClock.setMinutes(minutes);
         assertRowHas(expected,berlinClock.getThirdRow());
         assertRowHas(expected,berlinClock.getThirdRow());
     }
 
+    /**
+     * Each lamp that is on in the fourth row indicates +1 minute(max,4min)
+     */
     @ParameterizedTest
-    @MethodSource("sourceOfInvalidHours")
+    @MethodSource("berlin.TestValues#fourthRowArguments")
+    public void shouldReturnArrayOfColorsThatIndicateWhichLampsInTheFourthRowAreOn(){
+        berlinClock.setMinutes(30);
+        BarColor[] colors = berlinClock.getFourthRow();
+        assertRowHas(new BarColor[]{BarColor.NONE, BarColor.NONE, BarColor.NONE, BarColor.NONE}, colors);
+
+        berlinClock.setMinutes(31);
+        colors = berlinClock.getFourthRow();
+        assertRowHas(new BarColor[]{BarColor.YELLOW, BarColor.NONE, BarColor.NONE, BarColor.NONE}, colors);
+
+    }
+
+    @ParameterizedTest
+    @MethodSource("berlin.TestValues#sourceOfInvalidHours")
     public void setterAndConstructorShouldThrowIAEWhenHoursAreInvalid(int invalidHours){
         assertThrows(IllegalArgumentException.class,
                 () -> berlinClock = new BerlinClock(invalidHours, 30, 20));
@@ -101,117 +116,12 @@ public class BerlinTimeTest {
     }
 
     @ParameterizedTest
-    @MethodSource("sourceOfInvalidMinutes")
+    @MethodSource("berlin.TestValues#sourceOfInvalidMinutes")
     public void setterAndConstructorShouldThrowIAEWhenMinutesAreInvalid(int invalidMinutes){
         assertThrows(IllegalArgumentException.class,
                 () -> berlinClock = new BerlinClock(20, invalidMinutes, 20));
         assertThrows(IllegalArgumentException.class, () -> berlinClock.setMinutes(invalidMinutes));
     }
-
-    private static Stream<Arguments> firstRowArguments() {
-        return Stream.of(
-                arguments(1, expectedRow(0,4)),
-                arguments(4, expectedRow(0,4)),
-                arguments(5, expectedRow(1,3)),
-                arguments(9, expectedRow(1,3)),
-                arguments(10, expectedRow(2,2)),
-                arguments(14, expectedRow(2,2)),
-                arguments(15, expectedRow(3,1)),
-                arguments(19, expectedRow(3,1)),
-                arguments(20, expectedRow(4,0)),
-                arguments(23, expectedRow(4,0)),
-                arguments(24, expectedRow(4,0))
-        );
-    }
-
-    private static Stream<Arguments> secondRowArguments() {
-        return Stream.of(
-                arguments(5,expectedRow(0,4)),
-                arguments(10, expectedRow(0,4)),
-                arguments(15, expectedRow(0,4)),
-                arguments(20, expectedRow(0,4)),
-                arguments(6, expectedRow(1,3)),
-                arguments(11, expectedRow(1,3)),
-                arguments(16, expectedRow(1,3)),
-                arguments(21, expectedRow(1,3)),
-                arguments(2, expectedRow(2,2)),
-                arguments(7, expectedRow(2,2)),
-                arguments(12, expectedRow(2,2)),
-                arguments(17, expectedRow(2,2)),
-                arguments(22, expectedRow(2,2)),
-                arguments(3, expectedRow(3,1)),
-                arguments(8, expectedRow(3,1)),
-                arguments(13, expectedRow(3,1)),
-                arguments(23, expectedRow(3,1)),
-                arguments(4, expectedRow(4,0)),
-                arguments(9, expectedRow(4,0)),
-                arguments(14, expectedRow(4,0)),
-                arguments(19, expectedRow(4,0)),
-                arguments(24, expectedRow(4,0))
-        );
-    }
-
-    private static Stream<Arguments> thirdRowArguments() {
-        return Stream.of(
-                arguments(
-                        35,
-                        new BarColor[]{
-                        BarColor.YELLOW,BarColor.YELLOW,BarColor.RED,BarColor.YELLOW,BarColor.YELLOW,
-                        BarColor.RED,BarColor.YELLOW,BarColor.NONE,BarColor.NONE,BarColor.NONE,BarColor.NONE}
-                        ),
-                arguments(
-                        53,
-                        new BarColor[]{
-                        BarColor.YELLOW,BarColor.YELLOW,BarColor.RED,BarColor.YELLOW,BarColor.YELLOW,
-                        BarColor.RED,BarColor.YELLOW,BarColor.YELLOW,BarColor.RED,BarColor.YELLOW,BarColor.NONE}
-                        ),
-                arguments(
-                        22,
-                        new BarColor[]{
-                        BarColor.YELLOW,BarColor.YELLOW,BarColor.RED,BarColor.YELLOW,BarColor.NONE,
-                        BarColor.NONE,BarColor.NONE,BarColor.NONE,BarColor.NONE,BarColor.NONE,BarColor.NONE}
-                        ),
-                arguments(
-                        14,
-                        new BarColor[]{
-                        BarColor.YELLOW,BarColor.YELLOW,BarColor.NONE,BarColor.NONE,BarColor.NONE,
-                        BarColor.NONE,BarColor.NONE,BarColor.NONE,BarColor.NONE,BarColor.NONE,BarColor.NONE}
-                        )
-        );
-    }
-
-    private static BarColor[] expectedRow(int red, int none) {
-        BarColor[] colors = new BarColor[red + none];
-
-        for (int i = 0; i < red; i++) {
-            colors[i] = BarColor.RED;
-        }
-
-        for (int j = red; j < red + none; j++) {
-            colors[j] = BarColor.NONE;
-        }
-
-        return colors;
-    }
-
-    private static Stream<Arguments> secondsArguments() {
-        Collection<Arguments> arguments = new ArrayList<>();
-
-        for (int i = 0; i < 59; i++) {
-            arguments.add(arguments(i, i % 2 == 0 ? BarColor.YELLOW : BarColor.NONE));
-        }
-
-        return arguments.stream();
-    }
-
-    private static IntStream sourceOfInvalidHours(){
-        return IntStream.of(-1, -24, 0,25, 10_000, -5_000);
-    }
-
-    private static IntStream sourceOfInvalidMinutes(){
-        return IntStream.of(-1, -50, -10_000, 60, 10_000);
-    }
-
     private void assertRowHas(BarColor[] expected, BarColor[] actual) {
         assertEquals(expected.length,actual.length);
 
