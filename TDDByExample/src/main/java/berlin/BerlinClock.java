@@ -81,23 +81,17 @@ public class BerlinClock {
     }
 
     public void setSeconds(int seconds) {
-        if (seconds < 0 || seconds > 59) {
-            throw new IllegalArgumentException("Seconds are invalid.Valid seconds [0-59]");
-        }
+        checkValidTime(hours,minutes,seconds);
         this.seconds = seconds;
     }
 
     public void setHours(int hours) {
-        if (hours < 1 || hours > 24) {
-            throw new IllegalArgumentException("Hours are invalid.Correct values [1,24].");
-        }
+        checkValidTime(hours,minutes,seconds);
         this.hours = hours;
     }
 
     public void setMinutes(int minutes) {
-        if (minutes < 0 || minutes > 59) {
-            throw new IllegalArgumentException("Minutes are invalid.Valid values [0,59]");
-        }
+        checkValidTime(hours,minutes,seconds);
         this.minutes = minutes;
     }
 
@@ -111,5 +105,24 @@ public class BerlinClock {
 
     public int getSeconds() {
         return seconds;
+    }
+
+    private void checkValidTime(int hours,int minutes,int seconds){
+
+        if (hours == 24 && minutes > 0) {
+            throw new IllegalArgumentException("Invald Time.Hours = "+hours+",minutes = "+minutes);
+        }
+
+        if (minutes < 0 || minutes > 59) {
+            throw new IllegalArgumentException("Minutes are invalid.Valid values [0,59]");
+        }
+
+        if (hours < 1 || hours > 24) {
+            throw new IllegalArgumentException("Hours are invalid.Correct values [1,24].");
+        }
+
+        if (seconds < 0 || seconds > 59) {
+            throw new IllegalArgumentException("Seconds are invalid.Valid seconds [0-59]");
+        }
     }
 }

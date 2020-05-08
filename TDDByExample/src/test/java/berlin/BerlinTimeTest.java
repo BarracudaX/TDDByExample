@@ -21,7 +21,8 @@ public class BerlinTimeTest {
 
     @BeforeEach
     public void setUp() {
-        berlinClock = new BerlinClock(19, 55, 1);
+        //IMPORTANT:DON'T CHANGE THE MINUTES AND SECONDS FROM 0.
+        berlinClock = new BerlinClock(15, 0, 0);
     }
 
     @ParameterizedTest
@@ -119,6 +120,20 @@ public class BerlinTimeTest {
         assertThrows(IllegalArgumentException.class,
                 () -> berlinClock = new BerlinClock(20, 20, invalidSeconds));
         assertThrows(IllegalArgumentException.class, () -> berlinClock.setSeconds(invalidSeconds));
+    }
+
+    @Test
+    public void shouldThrowIAEWhenHoursAre24AndMinutesAreGreaterThanZero(){
+        assertThrows(IllegalArgumentException.class,
+                () -> berlinClock = new BerlinClock(24, 1, 0));
+
+        berlinClock = new BerlinClock(24, 0, 0);
+        assertThrows(IllegalArgumentException.class,
+                () -> berlinClock.setMinutes(1));
+
+        berlinClock.setHours(23);
+        berlinClock.setMinutes(50);
+        assertThrows(IllegalArgumentException.class, () -> berlinClock.setHours(24));
     }
 
     private void assertRowHas(BarColor[] expected, BarColor[] actual) {
