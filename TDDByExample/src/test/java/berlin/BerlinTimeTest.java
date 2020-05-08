@@ -46,13 +46,9 @@ public class BerlinTimeTest {
         assertRowHas(expectedResult, firstRow);
     }
 
-    @ParameterizedTest
-    @MethodSource("berlin.TestValues#firstRowArguments")
-    public void shouldReturnConsistentResultForFirstRow(int hours, BarColor[] expected) {
-        berlinClock.setHours(hours);
-
-        assertRowHas(expected, berlinClock.getFirstRow());
-        assertRowHas(expected, berlinClock.getFirstRow());
+    @Test
+    public void shouldNotChangeTheMinutesOfTheClockWhenAskedForFirstRow() {
+        assertStateNotChangedAfterAction(() -> berlinClock.getFirstRow());
     }
 
     /**
@@ -65,12 +61,9 @@ public class BerlinTimeTest {
         assertRowHas(expected, berlinClock.getSecondRow());
     }
 
-    @ParameterizedTest
-    @MethodSource("berlin.TestValues#secondRowArguments")
-    public void shouldReturnConsistentResultForSecondRow(int hours, BarColor[] expected) {
-        berlinClock.setHours(hours);
-        assertRowHas(expected, berlinClock.getSecondRow());
-        assertRowHas(expected, berlinClock.getSecondRow());
+    @Test
+    public void shouldNotChangeTheMinutesOfTheClockWhenAskedForSecondRow() {
+        assertStateNotChangedAfterAction(() -> berlinClock.getSecondRow());
     }
 
     /**
@@ -83,12 +76,9 @@ public class BerlinTimeTest {
         assertRowHas(expected, berlinClock.getThirdRow());
     }
 
-    @ParameterizedTest
-    @MethodSource("berlin.TestValues#thirdRowArguments")
-    public void shouldReturnConsistentColorsForTheThirdRow(int minutes,BarColor[] expected){
-        berlinClock.setMinutes(minutes);
-        assertRowHas(expected,berlinClock.getThirdRow());
-        assertRowHas(expected,berlinClock.getThirdRow());
+    @Test
+    public void shouldNotChangeTheMinutesOfTheClockWhenAskedForThirdRow(){
+        assertStateNotChangedAfterAction(() -> berlinClock.getThirdRow());
     }
 
     /**
@@ -100,6 +90,11 @@ public class BerlinTimeTest {
         berlinClock.setMinutes(minutes);
         BarColor[] colors = berlinClock.getFourthRow();
         assertRowHas(expected, colors);
+    }
+
+    @Test
+    public void shouldNotChangeTheMinutesOfTheClockWhenAskedForFourthRow(){
+        assertStateNotChangedAfterAction(() -> berlinClock.getFourthRow());
     }
 
     @ParameterizedTest
@@ -117,6 +112,7 @@ public class BerlinTimeTest {
                 () -> berlinClock = new BerlinClock(20, invalidMinutes, 20));
         assertThrows(IllegalArgumentException.class, () -> berlinClock.setMinutes(invalidMinutes));
     }
+
     private void assertRowHas(BarColor[] expected, BarColor[] actual) {
         assertEquals(expected.length,actual.length);
 
@@ -126,4 +122,23 @@ public class BerlinTimeTest {
         }
     }
 
+    private void assertStateNotChangedAfterAction(Action action) {
+        int hoursBefore = berlinClock.getHours();
+        int minutesBefore = berlinClock.getMinutes();
+        int secondsBefore = berlinClock.getSeconds();
+
+        action.perform();
+
+        int hoursAfter = berlinClock.getHours();
+        int minutesAfter = berlinClock.getMinutes();
+        int secondsAfter = berlinClock.getSeconds();
+
+        assertEquals(hoursBefore,hoursAfter);
+        assertEquals(minutesBefore,minutesAfter);
+        assertEquals(secondsBefore,secondsAfter);
+    }
+
+    private interface Action{
+        void perform();
+    }
 }
