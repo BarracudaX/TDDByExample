@@ -13,7 +13,7 @@ public class BerlinClock {
     public BerlinClock(int hours, int minutes, int seconds) {
         setHours(hours);
         setMinutes(minutes);
-        this.seconds = seconds;
+        setSeconds(seconds);
     }
 
     public BarColor isLightOn() {
@@ -60,11 +60,9 @@ public class BerlinClock {
     }
 
     public BarColor[] getFourthRow() {
-        minutes %= 5;
-
         BarColor[] colors = new BarColor[4];
 
-        fillRow(colors,minutes,value -> value > 0,value -> value - 1,BarColor.YELLOW);
+        fillRow(colors,minutes % 5,value -> value > 0,value -> value - 1,BarColor.YELLOW);
 
         return colors;
     }
@@ -83,6 +81,9 @@ public class BerlinClock {
     }
 
     public void setSeconds(int seconds) {
+        if (seconds < 0 || seconds > 59) {
+            throw new IllegalArgumentException("Seconds are invalid.Valid seconds [0-59]");
+        }
         this.seconds = seconds;
     }
 
@@ -100,4 +101,15 @@ public class BerlinClock {
         this.minutes = minutes;
     }
 
+    public int getHours() {
+        return hours;
+    }
+
+    public int getMinutes() {
+        return minutes;
+    }
+
+    public int getSeconds() {
+        return seconds;
+    }
 }

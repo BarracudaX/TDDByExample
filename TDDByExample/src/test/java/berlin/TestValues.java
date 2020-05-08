@@ -184,4 +184,8 @@ class TestValues {
         return IntStream.of(-1, -50, -10_000, 60, 10_000);
     }
 
+    private static IntStream sourceOfInvalidSeconds(){
+        return IntStream.of(-1, -50, -10_000, 60, 70, 10_000);
+    }
+
 }

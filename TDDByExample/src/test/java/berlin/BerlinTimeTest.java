@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-//12
+//13
 public class BerlinTimeTest {
 
     BerlinClock berlinClock;
@@ -111,6 +111,14 @@ public class BerlinTimeTest {
         assertThrows(IllegalArgumentException.class,
                 () -> berlinClock = new BerlinClock(20, invalidMinutes, 20));
         assertThrows(IllegalArgumentException.class, () -> berlinClock.setMinutes(invalidMinutes));
+    }
+
+    @ParameterizedTest
+    @MethodSource("berlin.TestValues#sourceOfInvalidSeconds")
+    public void setterAndConstructorShouldThrowIAEWhenSecondsAreInvalid(int invalidSeconds) {
+        assertThrows(IllegalArgumentException.class,
+                () -> berlinClock = new BerlinClock(20, 20, invalidSeconds));
+        assertThrows(IllegalArgumentException.class, () -> berlinClock.setSeconds(invalidSeconds));
     }
 
     private void assertRowHas(BarColor[] expected, BarColor[] actual) {
