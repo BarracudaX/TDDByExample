@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-//13
+//14
 public class BerlinTimeTest {
 
     BerlinClock berlinClock;
@@ -133,6 +133,20 @@ public class BerlinTimeTest {
 
         berlinClock.setHours(23);
         berlinClock.setMinutes(50);
+        assertThrows(IllegalArgumentException.class, () -> berlinClock.setHours(24));
+    }
+
+    @Test
+    public void shouldThrowIAEWhenHoursAre24AndSecondsAreGreaterThanZero(){
+        assertThrows(IllegalArgumentException.class,
+                () -> berlinClock = new BerlinClock(24, 0, 1));
+
+        berlinClock = new BerlinClock(24, 0, 0);
+        assertThrows(IllegalArgumentException.class,
+                () -> berlinClock.setSeconds(1));
+
+        berlinClock.setHours(23);
+        berlinClock.setSeconds(50);
         assertThrows(IllegalArgumentException.class, () -> berlinClock.setHours(24));
     }
 

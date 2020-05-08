@@ -109,7 +109,7 @@ public class BerlinClock {
 
     private void checkValidTime(int hours,int minutes,int seconds){
 
-        if (hours == 24 && minutes > 0) {
+        if (hours == 24 && (minutes > 0 || seconds > 0)) {
             throw new IllegalArgumentException("Invald Time.Hours = "+hours+",minutes = "+minutes);
         }
 
