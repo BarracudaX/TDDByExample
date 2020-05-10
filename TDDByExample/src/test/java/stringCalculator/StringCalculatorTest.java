@@ -76,6 +76,18 @@ public class StringCalculatorTest {
         assertEquals(6, calculator.add("//?\n1?2?3"));
     }
 
+    @Test
+    public void shouldThrowIAEWhenAddingNegativeNumberWithMessage(){
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("-1,2"));
+        assertEquals(ex.getMessage(), "negatives not allowed:-1");
+
+        ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("1\n-22"));
+        assertEquals(ex.getMessage(),"negatives not allowed:-22");
+
+        ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("//;\n-4\n2"));
+        assertEquals(ex.getMessage(),"negatives not allowed:-4");
+    }
+
     private static Stream<Arguments> sourceOfNumbers(){
         return Stream.of(
                 arguments("1", 1),

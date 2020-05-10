@@ -33,7 +33,11 @@ public class StringCalculator {
         int sum = 0;
 
         for (String argument : arguments) {
-            sum += Integer.parseInt(argument);
+            int nextNumber = Integer.parseInt(argument);
+            if (nextNumber < 0) {
+                throw new IllegalArgumentException("negatives not allowed:" + nextNumber);
+            }
+            sum += nextNumber;
         }
 
         return sum;
