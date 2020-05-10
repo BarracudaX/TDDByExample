@@ -1,12 +1,10 @@
 package stringCalculator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class StringCalculator {
-
+    private static final String DEFAULT_DELIMITER = ",";
 
     public int add(String input) {
         if (input.isEmpty()) {
@@ -40,37 +38,65 @@ public class StringCalculator {
         return sum;
     }
 
-    private Optional<String> getDelimiter(String numbers) {
+    private String[] getStringNumbers(String numbers) {
+        String[] delimiters = getDelimiters(numbers);
+
+        String[] arguments;
+
+        if (delimiters.length != 0) {
+            arguments = splitNumbersAccordingToDelimiters(delimiters, numbers);
+        } else {
+            arguments = numbers.lines().toArray(String[]::new);//Split using \n
+
+            if (arguments.length == 1) {//If only single line,split using default delimiter
+                arguments = arguments[0].split(DEFAULT_DELIMITER);
+            }
+
+        }
+        return arguments;
+    }
+
+    private String[] splitNumbersAccordingToDelimiters(String[] delimiters,String numbers) {
+
+        String[] arguments = numbers.split("\n")[1].split(Pattern.quote(delimiters[0]));
+        for (int i = 1; i < delimiters.length; i++) {
+            List<String> result = new ArrayList<>();
+            for (String argument : arguments) {
+                if (argument.contains(delimiters[i])) {
+                    result.addAll(Arrays.asList(argument.split(Pattern.quote(delimiters[i]))));
+                }else{
+                    result.add(argument);
+                }
+            }
+            arguments = result.toArray(new String[0]);
+        }
+
+        return arguments;
+    }
+
+    private String[] getDelimiters(String numbers) {
 
         //orElse impossible of first if in add method.
         String firstLine = numbers.lines().findFirst().orElse("");
 
-        String delimiter = null;
-
         if (firstLine.startsWith("//")) {
-            delimiter = firstLine.substring(firstLine.indexOf('[')+1,firstLine.lastIndexOf(']'));
-        }
+            StringBuilder delimiter = new StringBuilder();
 
-        return Optional.ofNullable(delimiter);
-    }
+            List<String> delimiters = new ArrayList<>();
 
-    private String[] getStringNumbers(String numbers) {
-        Optional<String> delimiter = getDelimiter(numbers);
-
-        String[] arguments;
-
-        if (delimiter.isPresent()) {
-            arguments = numbers.split("\n")[1].split(Pattern.quote(delimiter.get()));
-        } else {
-            arguments = numbers.lines().toArray(String[]::new);
-
-            if (arguments.length == 1) {
-                arguments = arguments[0].split(",");
+            for (int i = 2; i < firstLine.length(); i++) {
+                if (firstLine.charAt(i) == ']') {
+                    delimiters.add(delimiter.toString());
+                    delimiter = new StringBuilder();
+                } else if (firstLine.charAt(i) != '[') {
+                    delimiter.append(firstLine.charAt(i));
+                }
             }
-
+            return delimiters.stream().sorted((s, t1) -> t1.length() - s.length())
+                    .toArray(String[]::new);
         }
 
-        return arguments;
+        return new String[0];
     }
 
 }

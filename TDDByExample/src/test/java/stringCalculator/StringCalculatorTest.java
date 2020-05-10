@@ -120,6 +120,12 @@ public class StringCalculatorTest {
         assertEquals(5,calculator.add("//[**]\n3**2"));
     }
 
+    @Test
+    public void shouldAllowSpecifyingMultipleDelimiter(){
+        assertEquals(7,calculator.add("//[**][?]\n2**2?3"));
+        assertEquals(14,calculator.add("//[**][?][??]\n2**2?3**3??4"));
+    }
+
     private static Stream<Arguments> sourceOfNumbers(){
         return Stream.of(
                 arguments("1", 1),
