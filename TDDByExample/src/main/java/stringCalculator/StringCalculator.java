@@ -48,7 +48,7 @@ public class StringCalculator {
         String delimiter = null;
 
         if (firstLine.startsWith("//")) {
-            delimiter = firstLine.substring(2);
+            delimiter = firstLine.substring(firstLine.indexOf('[')+1,firstLine.lastIndexOf(']'));
         }
 
         return Optional.ofNullable(delimiter);

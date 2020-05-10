@@ -71,8 +71,8 @@ public class StringCalculatorTest {
 
     @Test
     public void shouldAllowSpecifyingDelimiterAtFirstLineOfString(){
-        assertEquals(3, calculator.add("//;\n1;2"));
-        assertEquals(6, calculator.add("//?\n1?2?3"));
+        assertEquals(3, calculator.add("//[;]\n1;2"));
+        assertEquals(6, calculator.add("//[?]\n1?2?3"));
     }
 
     @Test
@@ -84,7 +84,7 @@ public class StringCalculatorTest {
         ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("1\n-22"));
         assertTrue(ex.getMessage().contains("-22"));
 
-        ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("//;\n-4\n2"));
+        ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("//[;]\n-4\n2"));
         assertTrue(ex.getMessage().contains("-4"));
     }
 
@@ -101,7 +101,7 @@ public class StringCalculatorTest {
         assertTrue(ex.getMessage().contains("-13"));
         assertTrue(ex.getMessage().contains("-55"));
 
-        ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("//;\n-2;11;-8"));
+        ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("//[;]\n-2;11;-8"));
         assertTrue(ex.getMessage().contains("-2"));
         assertTrue(ex.getMessage().contains("-8"));
     }
@@ -111,7 +111,13 @@ public class StringCalculatorTest {
         assertEquals(1002, calculator.add("1000,1,1"));
         assertEquals(2, calculator.add("1001,1,1"));
         assertEquals(4, calculator.add("5000\n2\n2"));
-        assertEquals(5, calculator.add("//;\n40232;3;2"));
+        assertEquals(5, calculator.add("//[;]\n40232;3;2"));
+    }
+
+    @Test
+    public void shouldAllowSpecifyingDelimiterOfAnyLength(){
+        assertEquals(4,calculator.add("//[****]\n2****2"));
+        assertEquals(5,calculator.add("//[**]\n3**2"));
     }
 
     private static Stream<Arguments> sourceOfNumbers(){
