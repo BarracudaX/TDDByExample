@@ -60,6 +60,16 @@ public class StringCalculatorTest {
         assertEquals(6, calculator.add("1\n2\n3"));
     }
 
+    @Test
+    public void shouldThrowIAEWhenBothNewLineAndCommaAreUsed(){
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("1\n2,3"));
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("1,2\n3"));
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("1,\n3"));
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("1\n,3"));
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("1\n,"));
+        assertThrows(IllegalArgumentException.class, () -> calculator.add("1,\n"));
+    }
+
     private static Stream<Arguments> sourceOfNumbers(){
         return Stream.of(
                 arguments("1", 1),
