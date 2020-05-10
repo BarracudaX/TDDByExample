@@ -88,7 +88,6 @@ public class StringCalculatorTest {
         assertTrue(ex.getMessage().contains("-4"));
     }
 
-
     @Test
     public void shouldThrowIAEWhenAddingNegativeNumbersWithMessageThatContainsAllOfThem(){
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("2,-1,-2,5"));
@@ -105,8 +104,14 @@ public class StringCalculatorTest {
         ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("//;\n-2;11;-8"));
         assertTrue(ex.getMessage().contains("-2"));
         assertTrue(ex.getMessage().contains("-8"));
+    }
 
-
+    @Test
+    public void shouldIgnoreNumbersBiggerThanOneThousand(){
+        assertEquals(1002, calculator.add("1000,1,1"));
+        assertEquals(2, calculator.add("1001,1,1"));
+        assertEquals(4, calculator.add("5000\n2\n2"));
+        assertEquals(5, calculator.add("//;\n40232;3;2"));
     }
 
     private static Stream<Arguments> sourceOfNumbers(){
