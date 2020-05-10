@@ -70,6 +70,12 @@ public class StringCalculatorTest {
         assertThrows(IllegalArgumentException.class, () -> calculator.add("1,\n"));
     }
 
+    @Test
+    public void shouldAllowSpecifyingDelimiterAtFirstLineOfString(){
+        assertEquals(3, calculator.add("//;\n1;2"));
+        assertEquals(6, calculator.add("//?\n1?2?3"));
+    }
+
     private static Stream<Arguments> sourceOfNumbers(){
         return Stream.of(
                 arguments("1", 1),
