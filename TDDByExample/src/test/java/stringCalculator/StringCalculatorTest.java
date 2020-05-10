@@ -54,6 +54,12 @@ public class StringCalculatorTest {
         assertEquals(result, calculator.add(input));
     }
 
+    @ParameterizedTest
+    @MethodSource("sourceOfNumbersSeparatedByNewLine")
+    public void shouldAddNumbersSeparatedByNewLine(){
+        assertEquals(6, calculator.add("1\n2\n3"));
+    }
+
     private static Stream<Arguments> sourceOfNumbers(){
         return Stream.of(
                 arguments("1", 1),
@@ -62,6 +68,17 @@ public class StringCalculatorTest {
                 arguments("1,2,3,4", 10),
                 arguments("1,2,3,4,5", 15),
                 arguments("1,2,3,4,5,6", 21)
+        );
+    }
+
+    private static Stream<Arguments> sourceOfNumbersSeparatedByNewLine(){
+        return Stream.of(
+                arguments("1", 1),
+                arguments("1\n2", 3),
+                arguments("1\n2\n3", 6),
+                arguments("1\n2\n3\n4", 10),
+                arguments("1\n2\n3\n4\n5", 15),
+                arguments("1\n2\n3\n4\n5\n6", 21)
         );
     }
 
