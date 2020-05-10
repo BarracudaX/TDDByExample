@@ -8,8 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class StringCalculatorTest {
@@ -77,15 +76,37 @@ public class StringCalculatorTest {
     }
 
     @Test
+    @Disabled("covered by shouldThrowIAEWhenAddingNegativeNumbersWithMessageThatContainsAllOfThem")
     public void shouldThrowIAEWhenAddingNegativeNumberWithMessage(){
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("-1,2"));
-        assertEquals(ex.getMessage(), "negatives not allowed:-1");
+        assertTrue(ex.getMessage().contains("-1"));
 
         ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("1\n-22"));
-        assertEquals(ex.getMessage(),"negatives not allowed:-22");
+        assertTrue(ex.getMessage().contains("-22"));
 
         ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("//;\n-4\n2"));
-        assertEquals(ex.getMessage(),"negatives not allowed:-4");
+        assertTrue(ex.getMessage().contains("-4"));
+    }
+
+
+    @Test
+    public void shouldThrowIAEWhenAddingNegativeNumbersWithMessageThatContainsAllOfThem(){
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("2,-1,-2,5"));
+        assertTrue(ex.getMessage().contains("-1"));
+        assertTrue(ex.getMessage().contains("-2"));
+
+        ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("2,-1,5"));
+        assertTrue(ex.getMessage().contains("-1"));
+
+        ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("2\n-13\n-55"));
+        assertTrue(ex.getMessage().contains("-13"));
+        assertTrue(ex.getMessage().contains("-55"));
+
+        ex = assertThrows(IllegalArgumentException.class, () -> calculator.add("//;\n-2;11;-8"));
+        assertTrue(ex.getMessage().contains("-2"));
+        assertTrue(ex.getMessage().contains("-8"));
+
+
     }
 
     private static Stream<Arguments> sourceOfNumbers(){

@@ -1,5 +1,7 @@
 package stringCalculator;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -32,12 +34,18 @@ public class StringCalculator {
 
         int sum = 0;
 
+        List<Integer> negativeNumbers = new ArrayList<>();
+
         for (String argument : arguments) {
             int nextNumber = Integer.parseInt(argument);
             if (nextNumber < 0) {
-                throw new IllegalArgumentException("negatives not allowed:" + nextNumber);
+                negativeNumbers.add(nextNumber);
             }
             sum += nextNumber;
+        }
+
+        if (!negativeNumbers.isEmpty()) {
+            throw new IllegalArgumentException("Negative numbers not allowed:" + negativeNumbers.toString());
         }
 
         return sum;
