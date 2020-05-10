@@ -4,20 +4,17 @@ public class StringCalculator {
 
 
     public int add(String numbers) {
-        if (numbers.isEmpty()) {
-            return 0;
-        }
         String[] arguments = numbers.split(",");
 
-        int a = Integer.parseInt(arguments[0]);
+        int sum  = 0;
 
-        if (arguments.length == 1) {
-            return a;
+        for (String argument : arguments) {
+            if (!argument.isEmpty()) {
+                sum += Integer.parseInt(argument);
+            }
         }
 
-        int b = Integer.parseInt(arguments[1]);
-
-        return a + b;
+        return sum;
     }
 
 }
